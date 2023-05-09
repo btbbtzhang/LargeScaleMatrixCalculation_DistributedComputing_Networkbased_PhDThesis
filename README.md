@@ -1,6 +1,6 @@
 # ParallelComputing_GPUimplementation
 
-WorkFlow:  
+# WorkFlow:  
 
 Preprocessing big genetic data: step1, step2  
 
