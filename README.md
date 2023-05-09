@@ -1,4 +1,4 @@
-# ParallelComputing_GPUimplementation
+# ParallelComputing_GPUimplementation (partially)
 
 # WorkFlow:  
 
