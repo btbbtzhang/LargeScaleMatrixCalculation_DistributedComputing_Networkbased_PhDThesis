@@ -1,7 +1,12 @@
-# ParallelComputing_GPUimplementation (partially)
+# ParallelComputing_GPUimplementation (Only partial code here, since paper is recently submitted)
 
-# WorkFlow:  
+## Aim:
+To create a novel model that can address large genetic interactions problem in genome wide level.
 
+## How to reach:
+Separating machine-learning algorithm by distributed computing, GPU acceleration, static fixed memory size, suitable data structures, etc.
+
+## WorkFlow:  
 Preprocessing big genetic data: step1, step2  
 
 Converting table data into square similarity matrix (780k by 780k): step3  
@@ -17,4 +22,8 @@ Opitimizing/rewriting the clustering method, Kmeans by using homogenerous comput
 Futher clustering the pre-clustered results: step6_4  
 
 Interpreting the clustered results: step7  
+
+## Result:
+The first tool that can successfully handle a big matrix calculations for genome-wide genotype interactions data in bioinformatics field. Increased the efficiency from 3 years to 15 days. Saved 40% to 50% of memory consumptions. Successfully found the cross-validated biological findings in signal pathways, which proved our model accurate and precise.
+<img width="612" alt="Screen Shot 2023-05-09 at 7 41 05 PM" src="https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/218e5a3e-7d53-4e35-acc4-3475e91014b4">
 
