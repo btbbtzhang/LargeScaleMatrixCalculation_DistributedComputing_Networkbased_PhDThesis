@@ -6,7 +6,7 @@ Preprocessing big genetic data: step1, step2
 
 Converting table data into square similarity matrix (780k by 780k): step3  
 
-Denoising by using power exponential method: step4  
+Denoising the big matrix by using power exponential method: step4  
 
 Distributing the Topological Matrix Calculation into 5 different nodes: step5  
 
