@@ -4,7 +4,7 @@
 To create a novel model that can address large genetic interactions problem in genome wide level.
 
 ## How to reach:
-Separating machine-learning algorithm by distributed computing, GPU acceleration, static fixed memory size, suitable data structures, etc.
+Cutting machine-learning algorithm by distributed computing, GPU acceleration, static fixed memory size, suitable data structures, etc.
 
 ## WorkFlow:  
 Preprocessing big genetic data: step1, step2  
