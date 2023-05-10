@@ -82,6 +82,44 @@ def cuda_matmul(A, B, C):
 def matrices2_adding(A,B):
     return (A+B)
 
+@cuda.jit
+def fast_matmul(A, B, C):
+    # Define an array in the shared memory matrix: sa and sb
+    # The size and type of the arrays must be known at compile time
+    sa = cuda.shared.array(shape=(TPB, TPB), dtype=float32) # TPB: threads per block
+    sb = cuda.shared.array(shape=(TPB, TPB), dtype=float32)
+
+    x, y = cuda.grid(2)
+
+    idx = cuda.threadIdx.x
+    idy = cuda.threadIdx.y
+    bpg = cuda.gridDim.x    # blocks per grid
+
+    # Each thread computes one element in the result matrix.
+    # The dot product is chunked into dot products of TPB-long vectors.
+    tmp = float32(0.)
+    for i in range(bpg):
+        # Preload data into shared memory. Reordered the sense of x and y (and usage of tx and ty) to fix a performance issue, it works less efficiently if we do sa[idx, idy]
+        sa[idy, idx] = 0
+        sb[idy, idx] = 0
+        if y < A.shape[0] and (idx+i*TPB) < A.shape[1]:
+          sa[idy, idx] = A[y, idx + i * TPB]
+        if x < B.shape[1] and (idy+i*TPB) < B.shape[0]:
+          sb[idy, idx] = B[idy + i * TPB, x]
+
+        # Wait until all threads finish preloading
+        cuda.syncthreads()
+
+        # Computes partial product on the shared memory
+        for j in range(TPB):
+            tmp += sa[idy, j] * sb[j, idx]
+
+        # Wait until all threads finish computing
+        cuda.syncthreads()
+    if y < C.shape[0] and x < C.shape[1]:
+        C[y, x] = tmp
+
+
 def Tom_calc(A,L,ki,kj,n0,n1,Yi):
     os.system('grep MemFree /proc/meminfo')
     A_tom1 = L + A # size 100k by AdjMarix.shape[1]
@@ -135,6 +173,16 @@ print(time()-start)
 os.system('grep MemFree /proc/meminfo')
 """
 
+#TPB must be an integer between 1 and 32
+TPB = 3 # need to find a number that match with the matrix dimension
+threadsperblock = (TPB, TPB)
+# make sure the grid is big enough to cover the entire input matrix
+grid_y_max = max(A.shape[0], AdjMatrix.shape[0])
+grid_x_max = max(A.shape[1], AdjMatrix.shape[1])
+blockspergrid_x = math.ceil(grid_x_max / threadsperblock[0]) # we have 775569 data points, so 775569/3=258523
+blockspergrid_y = math.ceil(grid_y_max / threadsperblock[1])
+blockspergrid = (blockspergrid_x, blockspergrid_y)
+
 Yi=cupy.sparse.csr_matrix(cp.ones((600,775569)),dtype='float32')
 Savdirectorypath="/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/TOM_Chunks/"
 Savfilename="part_TOMatrix_chunk_row"
@@ -156,7 +204,9 @@ for i in range(l0,l1):
     AdjMatrix=cupy.sparse.csr_matrix(AdjMatrix)
     A=cupy.sparse.csr_matrix(A)
     print("the data shape of A: ", A.shape)
-    L = A * AdjMatrix
+    #cuda_matmul[775569, 600](A, AdjMatrix, L) this cuda function exceed the max griddimension
+    fast_matmul[blockspergrid, threadsperblock](A, AdjMatrix, L)
+    #L = A * AdjMatrix
     print("L = A * AdjMatrix is obtained")
     del AdjMatrix
 
