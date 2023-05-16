@@ -29,5 +29,6 @@ The first tool that can successfully handle a big matrix calculations for genome
 <img width="612" alt="Screen Shot 2023-05-09 at 7 41 05 PM" src="https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/218e5a3e-7d53-4e35-acc4-3475e91014b4">
 
 
-Landscape Pipeline of this project:  
+
+Landscape Pipeline of this project by using snakemake:  
 ![ESNApipeline](https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/3a577460-fcba-45d9-be41-1cddc4c0e040)
