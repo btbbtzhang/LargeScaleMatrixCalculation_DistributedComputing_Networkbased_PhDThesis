@@ -27,3 +27,7 @@ Interpreting the clustered results: step7
 The first tool that can successfully handle a big matrix calculations for genome-wide genotype interactions data in bioinformatics field. Increased the efficiency from 3 years to 15 days. Saved 40% to 50% of memory consumptions. Successfully found the cross-validated biological findings in signal pathways, which proved our model accurate and precise.  
 
 <img width="612" alt="Screen Shot 2023-05-09 at 7 41 05 PM" src="https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/218e5a3e-7d53-4e35-acc4-3475e91014b4">
+
+
+Landscape Pipeline of this project:  
+![ESNApipeline](https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/3a577460-fcba-45d9-be41-1cddc4c0e040)
