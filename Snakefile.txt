@@ -1,0 +1,262 @@
+## snakemake file for making ESNA pipeline
+
+rule ESNA:
+	input:
+		"GLIDEout",
+		"GSNout",
+		"Downstreamsout"
+		
+
+rule DownstreamsAnalyses:
+	input:
+		"GSNout",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/rsID_beta_treecut_pividori.txt",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/merged_child_only_updated_rsid_update_sex1_maf001_filesforSKAT",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/out.skat_adjustedBeta_treecut_Pividori.Rda",
+                "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/prs_analysis_cluster9.out"
+	output:
+		"Downstreamsout"
+
+
+
+rule GlobalSnpsNetwork:
+	input:
+		"GLIDEout",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/LD06finalGlide_Abs_normed_pyHDFcols.h5",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/GildeLD06DataNoNA.h5",
+                "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/SIMatrix.npz",
+                "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/logfiles/ESNAstep4_LoadSIM_ComputPower5.out",
+                "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/AdjMatrix.npz",
+                "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/TOM_Chunks/ipart_TOMatrix_chunk_rown0n1.npz",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/final_merged_array_sim.npy",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/submatrix_fromCluster_i.npy",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/dynamicTree/i_finalClusteredSNPs_j.npy",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/setIDforSKAT_treecut.txt"
+	output:
+		"GSNout"
+
+
+
+rule GLIDE:
+	input:
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissings",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout",
+		"/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout_wSnpIDandPvals_clean"
+	output:
+		"GLIDEout"
+
+
+rule GLIDE_step1_preprocessing:
+	input:
+		script = "ESNA-main/GLIDE/preprocessing.sh",
+	output:
+		out1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissings"
+	params:
+		file1 = "/global/project/hpcg1553/QC_GWAS/transfer_central/preprocessed/MAF005/child_only_qced_maf005_filtered",
+		file2 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs/pheno_yang2022_recoded",
+		script = "/global/project/hpcg1553/CHILD_glide/GLIDE_dir/GLIDE_plink2glide_py3.py"
+	shell: "{sbatch input.script} {params.file1} {params.file2} {params.script}"
+
+
+
+rule GLIDE_step2_runIT:
+	input:
+		script = "ESNA-main/GLIDE/step1_runGLIDE.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissings"
+	output:
+		out1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout"
+	shell: "{sbatch input.script}"
+
+
+
+rule GLIDE_step3_filtering:
+	input:
+		script = "ESNA-main/GLIDE/step2_GLIDEoutputFlitering.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout"
+	output:
+		out1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout_wSnpIDandPvals_clean"
+	params:
+		script = "ESNA-main/GLIDE/GLIDE_search_snpname_pval.R",
+	shell: "{sbatch input.script} {params.script}"
+
+
+
+rule GSN_step1_normalize:
+	input:
+		script = "ESNA-main/step1LoadNorming.sh",
+		file1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs1/child_only_qced_maf005_filtered_prunedInLD06_phenoAdded_noMissing_T3glideout_wSnpIDandPvals_clean"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/LD06finalGlide_Abs_normed_pyHDFcols.h5"
+	params:
+		script = "ESNA-main/1step1_dataLoadNorming.py"
+	shell: "{sbatch input.script} {params.script}"
+
+
+
+rule GSN_step2_QC:
+	input:
+		script = "ESNA-main/step2ReadHDFremovNAN.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/LD06finalGlide_Abs_normed_pyHDFcols.h5"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/GildeLD06DataNoNA.h5"
+	params:
+		script = "ESNA-main/2step2_loadHDF_removNAN.py"
+	shell:
+		"{sbatch input.script} {params.script}"
+
+
+
+rule GSN_step3_buildSIM:
+	input:
+		script = "ESNA-main/step3BuildSIM_COOsav.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/GildeLD06DataNoNA.h5"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/SIMatrix.npz"
+	params:
+		script = "ESNA-main/3step3_SIMatrix_COOsav_fin.py"
+	shell: "{sbatch input.script} {params.script}"
+
+
+rule GSN_step4_computPara:
+        input:
+                script = "ESNA-main/step4LoadSIM_computPower.sh",
+                file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/SIMatrix.npz"
+        output:
+                out = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/logfiles/ESNAstep4_LoadSIM_ComputPower5.out"
+        params:
+                script = "ESNA-main/4step4_loadSIM_comPower.py"
+        shell: "{sbatch input.script} {params.script}"
+
+
+rule GSN_step51_buildADJM:
+	input:
+		script = "ESNA-main/step5_1_cal_AdjMatrix.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/logfiles/ESNAstep4_LoadSIM_ComputPower5.out"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/AdjMatrix.npz"
+	params:
+		script = "ESNA-main/5_1step5_Cal_Adjmatrix.py"
+	shell: "{sbatch input.script} {params.script}"
+
+
+
+# Distributed tasks into different nodes
+rule GSN_step52_calGSN:
+	input:
+		script1 = "ESNA-main/step5_2_GSNgpu1.sh",
+		script2 = "ESNA-main/step5_2_GSNgpu2.sh",
+		script3 = "ESNA-main/step5_2_GSNgpu3.sh",
+		script4 = "ESNA-main/step5_2_GSNgpu4.sh",
+		script5 = "ESNA-main/step5_2_GSNgpu5.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/AdjMatrix.npz"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/TOM_Chunks/ipart_TOMatrix_chunk_rown0n1.npz"
+	params:
+		script1 = "ESNA-main/5_2step5_GSN_gpu_pool_final1.py",
+		script2 = "ESNA-main/5_2step5_GSN_gpu_pool_final2.py",
+		script3 = "ESNA-main/5_2step5_GSN_gpu_pool_final3.py",
+		script4 = "ESNA-main/5_2step5_GSN_gpu_pool_final4.py",
+		script5 = "ESNA-main/5_2step5_GSN_gpu_pool_final5.py"
+	shell:
+		"{sbatch input.script1} {sbatch input.script2} {sbatch input.script3} {sbatch input.script4} {sbatch input.script5} {params.script1} {params.script2} {params.script3} {params.script4} {params.script5}"
+
+
+
+# Merge the calculated GSN chunks into an array
+rule GSN_step61_mergeGSNchunks:
+	input:
+		script1 = "ESNA-main/step6_1_mergGSNChunks1.sh",
+		script2 = "ESNA-main/step6_1_mergGSNChunks1.sh",
+		script3 = "ESNA-main/step6_1_mergGSNChunks3.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/TOM_Chunks/ipart_TOMatrix_chunk_rown0n1.npz"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/final_merged_array_sim.npy"
+	params:
+		script1 = "ESNA-main/6_1step6_mergGSNChunks1.py",
+		script2 = "ESNA-main/6_1step6_mergGSNChunks2.py",
+		script3 = "ESNA-main/6_1step6_mergGSNChunks3.py"
+	shell:
+		"{sbatch input.script1} {sbatch input.script2} {sbatch input.script3} {params.script1} {params.script2} {params.script3}"
+
+
+
+rule GSN_step62_preClustering:
+	input:
+		script = "ESNA-main/step6_2_preclustering_k.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/final_merged_array_sim.npy"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/submatrix_fromCluster_i.npy"
+	params:
+		script1 = "ESNA-main/6_2step6_preclustering_kmeans1.py",
+		script2 = "ESNA-main/6_2step6_preclustering_kmeans2.py",
+		script3 = "ESNA-main/6_2step6_preclustering_kmeans3.py"
+	shell: "{sbatch input.script} {params.script1} {params.script2} {params.script3}"
+
+
+
+
+rule GSN_step63_treecutClustering:
+	input:
+		script = "ESNA-main/step6_3_treecutClustering.sh",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/submatrix_fromCluster_i.npy"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/dynamicTree/i_finalClusteredSNPs_j.npy"
+	params:
+		script = "ESNA-main/6_3step6_treecutClustering.py"
+	shell: "{sbatch input.script} {params.script}"
+
+
+
+rule GSN_step7_finalClustering:
+	input:
+		script = "ESNA-main/7step7_mergFinalClusteringResults.py",
+		file = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/clustering_arrays/preClusterResults/dynamicTree/i_finalClusteredSNPs_j.npy"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/setIDforSKAT_treecut.txt"
+	shell: "{python input.script}"
+
+
+
+rule Downstreams_step1_preprocessing:
+	input:
+		script = "ESNA-main/DownstreamAnalyses/1SKATandPRS_preprocessing.py",
+		file1 = "/global/project/hpcg1553/Yang/ajusted_Pividori_beta.txt",
+		file2 = "/global/project/hpcg1553/Yang/ESNA/Shrey/wgcnaTest/datasets/setIDforSKAT_treecut.txt"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/rsID_beta_treecut_pividori.txt"
+	shell: "{python input.script}"		
+	
+
+
+rule Downstreams_step2_preSKAT:
+	input:
+		script = "ESNA-main/DownstreamAnalyses/2prepare_files_forSKAT.sh",
+		file1="/global/project/hpcg1553/Child_imputation_2018/Michigan/CHILD_only/merged_child_only_updated_rsid_update_sex1_maf001.bed",
+		file2="/global/project/hpcg1553/Child_imputation_2018/Michigan/CHILD_only/merged_child_only_updated_rsid_update_sex1_maf001.bim",
+		file3="/global/project/hpcg1553/Child_imputation_2018/Michigan/CHILD_only/merged_child_only_updated_rsid_update_sex1_maf001.fam",
+		file4 = "/global/project/hpcg1553/Yang/ESNA/Shrey/glide/outputs/pheno_yang2022_recoded"
+	output:
+		out = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/merged_child_only_updated_rsid_update_sex1_maf001_filesforSKAT"	
+	shell: "{sbatch input.script}"
+
+
+
+
+rule Downstreams_step3_SKAT_PRS:
+	input:
+		script = "ESNA-main/DownstreamAnalyses/3SKATBinary_10PCAs_linear_skat.sh",
+		file1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/rsID_beta_treecut_pividori.txt",
+		file2 = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/merged_child_only_updated_rsid_update_sex1_maf001_filesforSKAT",
+		file3 = "/global/project/hpcg1553/dysynapsies/covariates_pcs_sex_child_only.txt",
+		file4 = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/prs_outputs/PRS_cluster9_raw.profile"
+	output:
+		out1 = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/inputs/out.skat_adjustedBeta_treecut_Pividori.Rda",
+		out2 = "/global/project/hpcg1553/Yang/ESNA/Shrey/FinalCode/SKAT/prs_analysis_cluster9.out"
+	params:
+		script = "ESNA-main/DownstreamAnalyses/3SKATbinary_10PCAs_linear_skat.R"
+	shell: "{sbatch input.script} {params.script}"
+
+
+
+
+
