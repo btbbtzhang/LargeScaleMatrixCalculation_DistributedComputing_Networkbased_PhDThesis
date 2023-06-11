@@ -24,7 +24,7 @@ Futher clustering the pre-clustered results: step6_4
 Interpreting the clustered results: step7  
 
 ## Result:
-The first tool that can successfully handle a big matrix calculations for genome-wide genotype interactions data (780kx 780k matrix) in bioinformatics field. Increased the efficiency from 3 years to 15 days. Saved 40% to 50% of memory consumptions. Successfully found the cross-validated biological findings in signal pathways, which proved our model accurate and precise.  
+The first tool that can successfully handle a big matrix calculations for genome-wide genotype interactions data (780kx 780k matrix) in bioinformatics field. Increased the efficiency from 3 years to 15 days. Saved 40%~ 50% of memory consumptions. Successfully found the cross-validated biological findings in the target signal pathways, which proved our model accurate and precise.  
 
 <img width="612" alt="Screen Shot 2023-05-09 at 7 41 05 PM" src="https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/218e5a3e-7d53-4e35-acc4-3475e91014b4">
 
