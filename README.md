@@ -32,6 +32,14 @@ Compared with the GWAS result.
 
 <img width="468" alt="fig4" src="https://github.com/btbbtzhang/LargeScaleMatrix_DistributedComputing_GPUbased_PhDThesis/assets/34163897/1548cb87-fcdd-4823-bc1e-b4ed05d376cc">
 
+Customized algorithm for heterogenous computing for Global SNPs Network construction.  
+
+![heterogeneouscomputing_GSN drawio](https://github.com/btbbtzhang/LargeScaleMatrix_DistributedComputing_GPUbased_PhDThesis/assets/34163897/7a1e7f6b-64f5-47fd-87de-bd6774fae1b8)
+
+Memory saving function.  
+
+<img width="468" alt="fig2" src="https://github.com/btbbtzhang/LargeScaleMatrix_DistributedComputing_GPUbased_PhDThesis/assets/34163897/e5033ea4-f3ff-4b23-9edc-a07ffa5ae045">
+
 
 
 
