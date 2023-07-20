@@ -1,7 +1,7 @@
 # ParallelComputing_GPUimplementation (Only partial code here, since paper is recently submitted)
 
 ## Aim:
-To create a novel model that can address large genetic interactions problem in genome wide level.
+To create the first heterogenous-computing framework to address real large-scale genetic interactions problem (high-order epistasis) at the genome-wide level.
 
 ## How to reach:
 Cutting machine-learning algorithms by distributed computing, GPU acceleration, static fixed memory size, suitable data structures, etc.
