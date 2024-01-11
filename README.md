@@ -28,6 +28,12 @@ The first tool that can successfully handle a big matrix calculations for genome
 
 <img width="612" alt="Screen Shot 2023-05-09 at 7 41 05 PM" src="https://github.com/btbbtzhang/ParallelComputing_GPUimplementation/assets/34163897/218e5a3e-7d53-4e35-acc4-3475e91014b4">
 
+Demonstration of optimizing GSNs:  
+
+![demonstration of GSN](https://github.com/btbbtzhang/LargeScaleMatrixCalculation_DistributedComputing_Networkbased_PhDThesis/assets/34163897/e34d04de-baf6-4d67-a9b3-efb9c91311b3)
+
+
+
 Compared with the GWAS result.  
 
 <img width="468" alt="fig4" src="https://github.com/btbbtzhang/LargeScaleMatrix_DistributedComputing_GPUbased_PhDThesis/assets/34163897/1548cb87-fcdd-4823-bc1e-b4ed05d376cc">
